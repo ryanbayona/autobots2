@@ -6,8 +6,8 @@ LOG="my.log"
 while true; do
     start=$(date '+%Y-%m-%d %H:%M:%S')
 
-    echo "==================================================" | tee -a "$LOG"
-    echo "START: $start | Iteration: $((count + 1))" | tee -a "$LOG"
+    echo "==================================================" 
+    echo "START: $start | Iteration: $((count + 1))" 
     if npx playwright test \
         tests/ppop-poll.spec.ts \
         --project=chromium \
@@ -24,7 +24,7 @@ while true; do
 
     ((count++))
     end=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "END:   $end | Iteration: $count | Exit: $status" | tee -a "$LOG"
+    echo "END:   $end | Iteration: $count | Exit: $status" 
 
     echo "Iteration: $count (exit=$status)"
     sleep 5
