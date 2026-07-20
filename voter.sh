@@ -15,7 +15,7 @@ while true; do
         --project=webkit \
         --project=mobile-safari \
         --project=ms-edge \
-        --reporter=line >>"$LOG" 2>&1
+        --reporter=line 
     then
         status=0
     else
