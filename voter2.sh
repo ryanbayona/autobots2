@@ -5,10 +5,10 @@ LOG="my2.log"
 
 projects=(
   chromium
-  firefox
-  webkit
-  mobile-safari
-  ms-edge
+  #firefox
+  #webkit
+  #mobile-safari
+  #ms-edge
 )
 
 while true; do
