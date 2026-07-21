@@ -267,13 +267,13 @@ function shuffle(array) {
   return copy;
 }
 
-const random20 = shuffle(proxies).slice(0, 20);
+const random5 = shuffle(proxies).slice(0, 1);
 
 let index= 0;
-for (const proxy of random20) {
+for (const proxy of random5) {
 
   test(`P-Pop 2026 poll ${index}`, async ({}) => {
-
+      test.setTimeout(0); 
       const browser = await chromium.launch({
         proxy: {
           server: `http://${proxy}`,
@@ -287,55 +287,65 @@ for (const proxy of random20) {
 
     await page.goto(POLL_URL);
     
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
+    let count =0;
+    while( count <= 25) {  
 
-    // If the Google consent dialog appears, accept it. It renders directly in the
-    // DOM under #fc-consent-root (not an iframe), so a normal locator works.
-    const consentRoot = page.locator('div.fc-consent-root');
-    try {
-      await consentRoot.waitFor({ state: 'visible', timeout: 5000 });
-      await consentRoot.getByRole('button', { name: /consent/i }).click();
-    } catch {
-      // Consent dialog never appeared (already consented) — continue.
-    }
-
-    // Scroll the poll into view. The poll element carries both classes.
-    const poll = page.locator('.CSS_Poll.PDS_Poll');
-    await poll.scrollIntoViewIfNeeded();
-
-    
-    // The answer label for BINI's "Signals" release (case-insensitive match).
-    const biniSignals = poll.locator('label[for="PDI_answer75253678"]');
-    //await expect(biniSignals).toHaveText(/BINI\s*-\s*'?Signals'?/i);
-    await biniSignals.click();
-
-    // The vote button inside the poll form.
-    const voteButton = poll.locator('form button.css-vote-button');
-    await voteButton.click();
-
-    const label = page.locator('label.pds-feedback-label').filter({
-      has: page.locator('span.pds-answer-text[title*="BINI"]'),
-    });
-    const votesLocator = label.locator('.pds-feedback-votes');
-    if (await votesLocator.count()) {
-      votesLocator.scrollIntoViewIfNeeded();
-      const text = await votesLocator.textContent();
-
-      if (/votes/i.test(text ?? '')) {
-        console.log('Votes found:', text?.trim());
+     
+      const consentRoot = page.locator('div.fc-consent-root');
+      try {
+        await consentRoot.waitFor({ state: 'visible', timeout: 5000 });
+        await consentRoot.getByRole('button', { name: /consent/i }).click();
+      } catch {
+        // Consent dialog never appeared (already consented) — continue.
       }
-    }
 
-    const votes = await votesLocator.textContent();
-    
-    const container = page.locator('#PDI_container17221304');
+      // Scroll the poll into view. The poll element carries both classes.
+      const poll = page.locator('.CSS_Poll.PDS_Poll');
+      await poll.scrollIntoViewIfNeeded();
 
-    const text = await container.textContent();
+      
+      // The answer label for BINI's "Signals" release (case-insensitive match).
+      const biniSignals = poll.locator('label[for="PDI_answer75253678"]');
+      //await expect(biniSignals).toHaveText(/BINI\s*-\s*'?Signals'?/i);
+      await biniSignals.click();
 
-    if (text?.match(/thank you for voting/i)) {
-      console.log('✅ Already voted ' + votes?.trim() );
-    } else {
-      console.log('❌ Not voted yet');
+      // The vote button inside the poll form.
+      const voteButton = poll.locator('form button.css-vote-button');
+      await voteButton.click();
+
+      const label = page.locator('label.pds-feedback-label').filter({
+        has: page.locator('span.pds-answer-text[title*="BINI"]'),
+      });
+      const votesLocator = label.locator('.pds-feedback-votes');
+      if (await votesLocator.count()) {
+        votesLocator.scrollIntoViewIfNeeded();
+        const text = await votesLocator.textContent();
+
+      }
+
+      const votes = await votesLocator.textContent();
+      
+      const container = page.locator('#PDI_container17221304');
+
+      const text = await container.textContent();
+      count++;
+      if (text?.match(/thank you for voting/i)) {
+        console.log('✅ Already voted ' + votes?.trim() );
+        await page.context().clearCookies();
+        await page.evaluate(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+        });
+        await page.reload({
+          waitUntil: 'domcontentloaded',
+        });
+
+        
+      } else {
+        console.log('❌ Not voted yet');
+        return;
+      }
     }
     
     
