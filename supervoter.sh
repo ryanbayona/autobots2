@@ -23,7 +23,7 @@ while true; do
     echo "END:   $end | Iteration: $count | Exit: $status" 
 
     echo "Iteration: $count (exit=$status)"
-    sleep 60
+    sleep 10
     #if (( count >= 12 )) || (( status != 0 )); then
     #if (( count >= 12 )); then
     #    echo "Sleeping 60 seconds..."

@@ -255,8 +255,9 @@ const proxies = [
 "152.232.81.217:8500",
 "198.37.106.157:6616"
 ];
+let index= 0;
+for (const proxy of proxies) {
 
-proxies.forEach( (proxy, index) => {
   test('BINI voter '+ index, async ({}) => {
     console.log(`Using proxy: ${proxy}`);
     const start = Date.now();
@@ -273,8 +274,8 @@ proxies.forEach( (proxy, index) => {
     let page = await context.newPage();
 
     await page.goto(POLL_URL);
-    await page.waitForLoadState('load');
-    
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout( Math.floor(Math.random() * 3001) + 2000 );
       // Scroll the poll into view. The poll element carries both classes.
       const poll = page.locator('.CSS_Poll.PDS_Poll');
       await poll.scrollIntoViewIfNeeded();
@@ -314,7 +315,7 @@ proxies.forEach( (proxy, index) => {
       
       if (text?.match(/thank you for voting/i)) {
         console.log(`✅ ${index} Already voted - ` + votes?.trim() + ` - ${((end - start) / 1000).toFixed(2)}`) ;
-            await browser.close();
+        await browser.close();
 
         return;
       } else {
@@ -325,4 +326,5 @@ proxies.forEach( (proxy, index) => {
       }
 
   });
-});
+  index++;
+}
