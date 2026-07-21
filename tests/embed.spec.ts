@@ -325,7 +325,7 @@ test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async 
         localStorage.clear();
         sessionStorage.clear();
       });
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(1000);
       await page.reload({
         waitUntil: 'domcontentloaded',
       });
