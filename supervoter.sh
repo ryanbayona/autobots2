@@ -11,6 +11,8 @@ while true; do
     if npx playwright test \
         tests/proxies.spec.ts \
         --project=chromium \
+  	--project=firefox \
+	--project=mobile-chrome \
         --reporter=line 
     then
         status=0
