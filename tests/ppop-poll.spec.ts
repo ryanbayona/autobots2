@@ -338,8 +338,6 @@ for (const proxy of random20) {
       console.log('❌ Not voted yet');
     }
     
-    // Explicitly close the browser once we're done so no window lingers.
-    //await page.context().browser()?.close();
     
   });
   index++;

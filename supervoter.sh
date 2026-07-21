@@ -10,7 +10,7 @@ while true; do
     echo "START: $start | Iteration: $((count + 1))" 
     if npx playwright test \
         tests/ppop-poll.spec.ts \
-        --project=chromium \
+        --project=firefox \
         --reporter=line 
     then
         status=0
