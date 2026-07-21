@@ -256,10 +256,12 @@ const proxies = [
 "198.37.106.157:6616"
 ];
 let index= 0;
+test.afterEach(async ({ page }) => {
+  await page.waitForTimeout(1500);
+});
 for (const proxy of proxies) {
 
   test('BINI voter '+ index, async ({}) => {
-    console.log(`Using proxy: ${proxy}`);
     const start = Date.now();
 
     const browser = await chromium.launch({
@@ -314,7 +316,7 @@ for (const proxy of proxies) {
 
       
       if (text?.match(/thank you for voting/i)) {
-        console.log(`✅ ${index} Already voted - ` + votes?.trim() + ` - ${((end - start) / 1000).toFixed(2)}`) ;
+        console.log(`✅ Already voted - ` + votes?.trim() + ` - ${((end - start) / 1000).toFixed(2)}`) ;
         await browser.close();
 
         return;
