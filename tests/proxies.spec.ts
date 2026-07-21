@@ -255,11 +255,24 @@ const proxies = [
 "152.232.81.217:8500",
 "198.37.106.157:6616"
 ];
+
+function shuffle(array) {
+  const copy = [...array];
+
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+
+  return copy;
+}
+
+const random20 = shuffle(proxies).slice(0, 20);
+
+
+
 let index= 0;
-test.afterEach(async ({ page }) => {
-  await page.waitForTimeout(1500);
-});
-for (const proxy of proxies) {
+for (const proxy of random20) {
 
   test('BINI voter '+ index, async ({}) => {
     const start = Date.now();
