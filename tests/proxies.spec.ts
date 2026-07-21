@@ -255,14 +255,11 @@ const proxies = [
 "152.232.81.217:8500",
 "198.37.106.157:6616"
 ];
-test.setTimeout(100_000);   // 5 minutes
-test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async ({}) => {
 
-
-
-    const proxy = proxies[Math.floor(Math.random() * proxies.length)];
-
+proxies.forEach( (proxy, index) => {
+  test('BINI voter '+ proxy, async ({}) => {
     console.log(`Using proxy: ${proxy}`);
+    const start = Date.now();
 
     const browser = await chromium.launch({
       proxy: {
@@ -277,8 +274,7 @@ test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async 
 
     await page.goto(POLL_URL);
     await page.waitForLoadState('load');
-    let count = 1;
-    while (count <= 25) {
+    
       // Scroll the poll into view. The poll element carries both classes.
       const poll = page.locator('.CSS_Poll.PDS_Poll');
       await poll.scrollIntoViewIfNeeded();
@@ -313,24 +309,20 @@ test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async 
 
       const text = await container.textContent();
 
+      const end = Date.now();
+
+      
       if (text?.match(/thank you for voting/i)) {
-        console.log(`✅ ${count} Already voted - ` + votes?.trim()) ;
+        console.log(`✅ ${index} Already voted - ` + votes?.trim() + ` - ${((end - start) / 1000).toFixed(2)}`) ;
+            await browser.close();
+
+        return;
       } else {
         console.log('❌ Not voted yet');
+            await browser.close();
+
         return;
       }
 
-      await page.context().clearCookies();
-      await page.evaluate(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-      });
-      await page.waitForTimeout(3500);
-      await page.reload({
-        waitUntil: 'domcontentloaded',
-      });
-      count++;
-    }  
-
+  });
 });
-//article-page-content
