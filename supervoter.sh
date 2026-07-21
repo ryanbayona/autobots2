@@ -11,8 +11,6 @@ while true; do
     if npx playwright test \
         tests/ppop-poll.spec.ts \
         --project=chromium \
-  	--project=firefox \
-	--project=mobile-chrome \
         --reporter=line 
     then
         status=0
