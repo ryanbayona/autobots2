@@ -282,7 +282,7 @@ test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async 
       // Scroll the poll into view. The poll element carries both classes.
       const poll = page.locator('.CSS_Poll.PDS_Poll');
       await poll.scrollIntoViewIfNeeded();
-      let target = 'PDI_answer75253677';
+      let target = 'PDI_answer75253678';
       // The answer label for BINI's "Signals" release (case-insensitive match).
       const biniSignals = poll.locator('label[for="'+target+'"]');
       //await expect(biniSignals).toHaveText(/BINI\s*-\s*'?Signals'?/i);
@@ -292,7 +292,7 @@ test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async 
       const voteButton = poll.locator('form button.css-vote-button');
       await voteButton.click();
 
-      let targetTitle = "Baby Dolls - 'ZoomBaby Dolls'";
+      let targetTitle = "BINI";
       //after voting
       const label = page.locator('label.pds-feedback-label').filter({
         has: page.locator('span.pds-answer-text[title*="'+ targetTitle +'"]'),
