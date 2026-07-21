@@ -9,7 +9,7 @@ while true; do
     echo "==================================================" 
     echo "START: $start | Iteration: $((count + 1))" 
     if npx playwright test \
-        tests/proxies.spec.ts \
+        tests/ppop-poll.spec.ts \
         --project=chromium \
   	--project=firefox \
 	--project=mobile-chrome \
