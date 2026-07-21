@@ -257,7 +257,7 @@ const proxies = [
 ];
 
 proxies.forEach( (proxy, index) => {
-  test('BINI voter '+ proxy, async ({}) => {
+  test('BINI voter '+ index, async ({}) => {
     console.log(`Using proxy: ${proxy}`);
     const start = Date.now();
 
