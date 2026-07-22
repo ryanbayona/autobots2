@@ -2,31 +2,32 @@
 
 count=0
 
-commands=(
-  "npx playwright test tests/billboard.spec.ts --reporter=line --project=chromium --project=firefox"
-)
 
 while true; do
     start=$(date '+%Y-%m-%d %H:%M:%S')
 
-    echo "=================================================="
-    echo "START: $start | Iteration: $((count + 1))"
-
-    mapfile -t shuffled < <(printf "%s\n" "${commands[@]}" | shuf)
-
-    for cmd in "${shuffled[@]}"; do
-        echo ">>> Running: $cmd"
-        eval "$cmd" || true
-
-        # Random sleep between 0.5 and 5.0 seconds
-        sleep $(awk 'BEGIN{srand(); printf "%.2f\n", 0.5 + rand()*4.5}')
-    done
+    echo "==================================================" 
+    echo "START: $start | Iteration: $((count + 1))" 
+    if npx playwright test tests/billboard.spec.ts --project=chromium --project=firefox --reporter=line --workers=2 || true 
+    then
+        status=0
+    else
+        status=$?
+    fi
 
     ((count++))
-
     end=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "END: $end | Iteration: $count"
+    echo "END:   $end | Iteration: $count | Exit: $status" 
 
-    # Random sleep between 5 and 30 seconds
+    echo "Iteration: $count (exit=$status)"
     sleep 1
+    #if (( count >= 12 )) || (( status != 0 )); then
+    #if (( count >= 12 )); then
+    #    echo "Sleeping 60 seconds..."
+    #    sleep 60
+    #    count=0      # Optional: restart the iteration count
+    #else
+    #    sleep 5
+    #fi
 done
+
