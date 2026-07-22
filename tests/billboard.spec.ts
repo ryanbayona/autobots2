@@ -303,6 +303,7 @@ const proxies = [
           
           await page.reload({
             waitUntil: 'domcontentloaded',
+            timeout: 20_000
           });
         } else{
           
