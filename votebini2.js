@@ -1,6 +1,11 @@
 async function voteBini(){
-    const label = document.querySelector("label[for='PDI_answer75253678']");
     const voteButton = document.querySelector("#pd-vote-button17221304");
+
+    while (!document.querySelector("label[for='PDI_answer75253678']")) {
+        await new Promise(r => setTimeout(r, 100));
+    }
+
+    const label = document.querySelector("label[for='PDI_answer75253678']");
     
 
     label.click();
@@ -40,16 +45,6 @@ async function voteBini(){
             }
             await sleep(100);
         }
-
-        
-
-
-        
-
-
-        
-
-
     }
 
 
