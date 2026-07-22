@@ -262,7 +262,7 @@ test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async 
 
     const proxy = proxies[Math.floor(Math.random() * proxies.length)];
 
-    console.log(`Using proxy: ${proxy}`);
+    console.log("Running embedded script strat");
 
     const browser = await chromium.launch({
       proxy: {
@@ -325,7 +325,7 @@ test('P-Pop 2026 poll shows the BINI - Signals answer and a vote button', async 
         localStorage.clear();
         sessionStorage.clear();
       });
-      await page.waitForTimeout(3500);
+      await page.waitForTimeout(1000);
       await page.reload({
         waitUntil: 'domcontentloaded',
       });

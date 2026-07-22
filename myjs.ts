@@ -1,8 +1,7 @@
-import { test, expect, firefox} from '@playwright/test';
+import { fetch, ProxyAgent } from 'undici';
 
-const POLL_URL =
-  'https://poll.fm/17221304/embed?fbclid=IwY2xjawTC819leHRuA2FlbQIxMABicmlkETFvdUhVa2RmazhBU0VCU3Juc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHpT8h8FHERnj5I_ixAbiACVnYwwS8jUf-sM4-2xYSleN0d2aZ81CxvJFQ2en_aem_GgWpzb1RUPXIjqjSvim9pQ';
-
+//  username: 'rtmcismk',
+//      password: 'zs30ui63q6o7',
 const proxies = [
 "193.187.114.181:6196",
 "38.154.233.21:5431",
@@ -254,7 +253,11 @@ const proxies = [
 "31.57.41.175:5751",
 "152.232.81.217:8500",
 "198.37.106.157:6616"
-];
+];    
+//  username: 'rtmcismk',
+//      password: 'zs30ui63q6o7',
+
+//  const proxy = proxies[Math.floor(Math.random() * proxies.length)];
 
 function shuffle(array) {
   const copy = [...array];
@@ -268,77 +271,99 @@ function shuffle(array) {
 }
 
 const random20 = shuffle(proxies).slice(0, 20);
+console.log("Running API strat");
+for (const proxy of random20){
 
+  const proxyAgent = new ProxyAgent(`http://rtmcismk:zs30ui63q6o7@${proxy}`);
 
-let index= 0;
-for (const proxy of random20) {
+  
 
-  test('BINI voter '+ index, async ({}) => {
-    const start = Date.now();
-    console.log("Running proxies strat");
-    const browser = await firefox.launch({
-      proxy: {
-        server: `http://${proxy}`,
-        username: 'rtmcismk',
-        password: 'zs30ui63q6o7',
-      },
-    });  
+    const pollUrl = 'https://billboardphilippines.com/music/features/p-pop-2026-favorite-release-poll/';
+    let params = {
+        p: '17221304',
+        b: '1',
+        a: '75253678',
+        o: '',
+        va: '16',
+        cookie: '0',  
+        tags: '17221304-src:poll-embed',
+        n: '',
+        url:pollUrl
+    };
+    //const ts = new Date().getTime() + 1000;
+    const ts = new Date().getTime();
 
-    let context = await browser.newContext();
-    let page = await context.newPage();
+    await fetch('https://poll.fm/n/4b1edb5ca6983f1f6be1f868d6e68fe6/17221304?'+ ts, {
+        dispatcher: proxyAgent,
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.text();
+      })
+      .then(text => {
+        params.n = text.split(";")[0].split("=")[1].replace(/'/g, '');
+        
+      }).then(() => {
+        let queryString = new URLSearchParams(params).toString();
+        let voteUrl = 'https://polls.polldaddy.com/vote-js.php?' + queryString ;
 
-    await page.goto(POLL_URL);
-    await page.waitForLoadState('domcontentloaded');
-    await page.waitForTimeout( Math.floor(Math.random() * 3001) + 2000 );
-      // Scroll the poll into view. The poll element carries both classes.
-      const poll = page.locator('.CSS_Poll.PDS_Poll');
-      await poll.scrollIntoViewIfNeeded();
-      let target = 'PDI_answer75253678';
-      // The answer label for BINI's "Signals" release (case-insensitive match).
-      const biniSignals = poll.locator('label[for="'+target+'"]');
-      //await expect(biniSignals).toHaveText(/BINI\s*-\s*'?Signals'?/i);
-      await biniSignals.click();
+        fetch(voteUrl,
+          {
+            headers: {
+                // Content negotiation
+                "Accept": "*/*",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Accept-Encoding": "gzip, deflate, br, zstd", // Undici may manage decompression behavior
 
-      // The vote button inside the poll form.
-      const voteButton = poll.locator('form button.css-vote-button');
-      await voteButton.click();
+                // Client identity
+                "User-Agent": "Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36",
 
-      let targetTitle = "BINI";
-      //after voting
-      const label = page.locator('label.pds-feedback-label').filter({
-        has: page.locator('span.pds-answer-text[title*="'+ targetTitle +'"]'),
-      });
+                // Navigation context
+                "Referer": "https://billboardphilippines.com/",
+                "Dnt": "1",
+                "sec-ch-ua": '"Not;A=Brand";v="8", "Chromium";v="150", "Google Chrome";v="150"',
+                "sec-ch-ua-mobile": "?1",
+                "sec-ch-ua-platform": '"Android"',
+                "sec-fetch-dest": "script",
+                "sec-fetch-mode": "no-cors",
+                "sec-fetch-site": "cross-site",
+                "sec-fetch-storage-access": "active",
+              }
+          }
 
-      const votesLocator = label.locator('.pds-feedback-votes');
-      if (await votesLocator.count()) {
-        votesLocator.scrollIntoViewIfNeeded();
-        const text = await votesLocator.textContent();
+        )
+          .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.text();
+          })
+          .then(text => {
+            
+            if (/thank you for voting/i.test(text ?? '')) {
+                console.log();
+                const match = text.match(
+                  /title="([^"]*Signals[^"]*)">[\s\S]*?<span class="pds-feedback-votes">[^<]*\(([\d,]+) votes\)<\/span>/
+                );
 
-        if (/votes/i.test(text ?? '')) {
-          console.log('Votes found:', text?.trim());
-        }
-      }
+                if (match) {
+                  const answer = match[1]
+                    .replace(/\\&#039;/g, "'")
+                    .replace(/&#039;/g, "'");
 
-      const votes = await votesLocator.textContent();
-      const container = page.locator('#PDI_container17221304');
+                  const votes = match[2];
+                  console.log('✅ Voted '+ votes);
+                }
 
-      const text = await container.textContent();
-
-      const end = Date.now();
-
+            } else {
+                console.log('❌ Not counted');
+            }
+          });
+      })
+      .catch(err => console.error('Request failed:', err));
       
-      if (text?.match(/thank you for voting/i)) {
-        console.log(`✅ Already voted - ` + votes?.trim() + ` - ${((end - start) / 1000).toFixed(2)}`) ;
-        await browser.close();
 
-        return;
-      } else {
-        console.log('❌ Not voted yet');
-            await browser.close();
 
-        return;
-      }
+      await new Promise(resolve => setTimeout(resolve, 1000));
+  
 
-  });
-  index++;
-}
+
+};
