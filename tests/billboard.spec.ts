@@ -280,7 +280,7 @@ const proxies = [
         bypassCSP: true,
       });
       const page = await context.newPage();
-      await page.goto(POLL_URL);
+      await page.goto(POLL_URL, {timeout: 30000});
       await page.waitForLoadState('domcontentloaded');
 
       while( count <= 25) {  
